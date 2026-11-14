@@ -10,9 +10,9 @@
   5. Шрифт            --font-brand (Inter, задаётся в layout.tsx)
 */
 :root {
-  --brand: #6d28d9;
-  --bg: #faf7f2;
-  --text: #1f1b2e;
+  --brand: #0f766e;
+  --bg: #f7f8f6;
+  --text: #14201d;
   --radius: 0.75rem;
 
   --background: var(--bg);
@@ -21,15 +21,15 @@
   --card-foreground: var(--text);
   --primary: var(--brand);
   --primary-foreground: #ffffff;
-  --secondary: #ede9fe;
-  --secondary-foreground: #4c1d95;
-  --muted: #f1ede6;
-  --muted-foreground: #6b6577;
-  --accent: #f3effd;
+  --secondary: #ccfbf1;
+  --secondary-foreground: #134e4a;
+  --muted: #eef0ed;
+  --muted-foreground: #5f6b67;
+  --accent: #eef7f5;
   --accent-foreground: var(--text);
   --destructive: #dc2626;
-  --border: #e7e2da;
-  --input: #ddd7ce;
+  --border: #e1e5e1;
+  --input: #d3d9d4;
   --ring: var(--brand);
 }
 

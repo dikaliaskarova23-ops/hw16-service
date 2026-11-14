@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { LoginForm } from "./login-form";
 
 export default async function LoginPage(props: PageProps<"/login">) {
-  if (await getCurrentUser()) redirect("/assignments");
+  if (await getCurrentUser()) redirect("/periods");
   const { error } = await props.searchParams;
 
   return (
@@ -12,7 +12,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">Вход</CardTitle>
-          <CardDescription>Чтобы видеть свои задания и дедлайны</CardDescription>
+          <CardDescription>Чтобы составлять и скачивать платёжные календари</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (

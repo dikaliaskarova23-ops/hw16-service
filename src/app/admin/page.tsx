@@ -1,12 +1,12 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { deleteAssignment, setUserRole } from "@/app/actions";
-import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
+import { setUserRole } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDeadline, STATUS_LABELS, type Status } from "@/lib/format";
+import { formatDate, money } from "@/lib/calendar";
 
 // Страница админа. requireAdmin() проверяет роль на сервере:
 // обычный пользователь, открывший /admin по прямой ссылке, будет перенаправлен.
@@ -14,11 +14,11 @@ export default async function AdminPage() {
   const me = await requireAdmin();
   const supabase = await createClient();
 
-  const [{ data: profiles }, { data: assignments }] = await Promise.all([
+  const [{ data: profiles }, { data: periods }] = await Promise.all([
     supabase.from("profiles").select("id, email, full_name, role, created_at").order("created_at"),
     supabase
-      .from("assignments")
-      .select("id, user_id, subject, title, deadline, status")
+      .from("periods")
+      .select("id, user_id, name, starts_on, ends_on, opening_balance, currency, operations(count)")
       .order("created_at", { ascending: false })
       .limit(50),
   ]);
@@ -28,7 +28,7 @@ export default async function AdminPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Админка</h1>
-        <p className="text-muted-foreground">Пользователи сервиса и последние задания всех пользователей.</p>
+        <p className="text-muted-foreground">Пользователи сервиса и их платёжные календари.</p>
       </div>
 
       <Card>
@@ -45,7 +45,10 @@ export default async function AdminPage() {
             <TableBody>
               {(profiles ?? []).map((p) => (
                 <TableRow key={p.id}>
-                  <TableCell>{p.email}{p.full_name ? <div className="text-xs text-muted-foreground">{p.full_name}</div> : null}</TableCell>
+                  <TableCell>
+                    {p.email}
+                    {p.full_name ? <div className="text-xs text-muted-foreground">{p.full_name}</div> : null}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={p.role === "admin" ? "default" : "secondary"}>
                       {p.role === "admin" ? "админ" : "пользователь"}
@@ -68,28 +71,26 @@ export default async function AdminPage() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Последние задания всех пользователей</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Календари всех пользователей</CardTitle></CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Кто</TableHead>
-                <TableHead>Предмет</TableHead>
-                <TableHead>Задание</TableHead>
-                <TableHead>Дедлайн</TableHead>
-                <TableHead>Статус</TableHead>
-                <TableHead />
+                <TableHead>Календарь</TableHead>
+                <TableHead>Период</TableHead>
+                <TableHead className="text-right">Остаток на начало</TableHead>
+                <TableHead className="text-right">Операций</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(assignments ?? []).map((a) => (
-                <TableRow key={a.id}>
-                  <TableCell className="text-xs">{emailById.get(a.user_id) ?? "—"}</TableCell>
-                  <TableCell>{a.subject}</TableCell>
-                  <TableCell>{a.title}</TableCell>
-                  <TableCell className="whitespace-nowrap">{formatDeadline(a.deadline)}</TableCell>
-                  <TableCell>{STATUS_LABELS[a.status as Status]}</TableCell>
-                  <TableCell><ConfirmDeleteButton action={deleteAssignment.bind(null, a.id)} /></TableCell>
+              {(periods ?? []).map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell className="text-xs">{emailById.get(p.user_id) ?? "—"}</TableCell>
+                  <TableCell><Link href={`/periods/${p.id}`} className="hover:text-primary">{p.name}</Link></TableCell>
+                  <TableCell className="whitespace-nowrap">{formatDate(p.starts_on)} — {formatDate(p.ends_on)}</TableCell>
+                  <TableCell className="text-right whitespace-nowrap">{money(p.opening_balance, p.currency)}</TableCell>
+                  <TableCell className="text-right">{(p.operations as unknown as { count: number }[])?.[0]?.count ?? 0}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

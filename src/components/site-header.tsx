@@ -10,12 +10,11 @@ export async function SiteHeader() {
     <header className="border-b bg-card">
       <div className="mx-auto flex max-w-4xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
         <Link href="/" className="font-semibold text-primary">
-          ⏰ Дедлайны
+          💸 Платёжный календарь
         </Link>
         {user && (
           <nav className="flex gap-4 text-sm">
-            <Link href="/assignments" className="hover:text-primary">Задания</Link>
-            <Link href="/semesters" className="hover:text-primary">Семестры</Link>
+            <Link href="/periods" className="hover:text-primary">Календари</Link>
             {/* Ссылку видит только админ, но сама страница /admin ещё раз проверяет роль на сервере */}
             {user.role === "admin" && (
               <Link href="/admin" className="hover:text-primary">Админка</Link>

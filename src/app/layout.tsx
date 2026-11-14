@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Дедлайны — трекер заданий",
-  description: "Все домашние задания и сроки в одном месте",
+  title: "Платёжный календарь",
+  description: "Внеси платежи, поступления и остатки — получи платёжный календарь в Excel",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
