@@ -2,8 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Все страницы зависят от вошедшего пользователя, поэтому рендерим их на каждый запрос.
   turbopack: {
     rules: {
       "*.css": {
